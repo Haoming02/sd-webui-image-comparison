@@ -1,0 +1,52 @@
+#tab_sd-webui-image-comparison {
+    overflow: hidden;
+    --img-comp-width: 768px;
+}
+
+#img_comp_row {
+    height: var(--img-comp-width);
+}
+
+    #img_comp_row img {
+        position: relative;
+    }
+
+        #img_comp_row img:hover {
+            cursor: ew-resize;
+        }
+
+    #img_comp_row .comp-block {
+        width: var(--img-comp-width);
+        height: var(--img-comp-width);
+        position: absolute;
+        z-index: 100;
+        left: calc(50% - (var(--img-comp-width) / 2));
+        border-radius: 0px;
+    }
+
+    #img_comp_row .bar {
+        display: block;
+        width: 2px;
+        height: var(--img-comp-width);
+        position: absolute;
+        background-color: white;
+        left: calc(50% + (var(--img-comp-width) / 2) - 4px);
+        z-index: 500;
+        min-width: 0px;
+        opacity: 0.9;
+        pointer-events: none;
+    }
+
+#img_comp_btn {
+    margin-top: auto;
+}
+
+#img_comp_extras {
+    margin-bottom: auto;
+}
+
+#img_comp_tools {
+    background-color: var(--panel-background-fill);
+    padding: 1em;
+    border-radius: 1em;
+}
