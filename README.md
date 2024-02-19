@@ -2,12 +2,15 @@
 This is an Extension for the [Automatic1111 Webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui), which adds a new tab for image comparison.
 
 <p align="center">
-<img src="tab.gif">
+<img src="tab.gif"><br>
+<i>Draggable Image Slider</i>
 </p>
 
-Wanna check how well your `img2img` upscale went? Upload the input and output images to the new **Comparison** tab to see!
-
-This also comes with a button to automatically load them for you.
+Wanna check how your `img2img` went? 
+Upload the input and output images manually, 
+or click a button to load the images from **img2img** or **Extras** tab automatically,
+to the new **Comparison** tab to compare the results!
+This even works for cropped images!
 
 <hr>
 

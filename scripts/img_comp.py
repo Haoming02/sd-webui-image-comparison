@@ -1,10 +1,14 @@
 from modules import script_callbacks
+from PIL import Image
 import gradio as gr
 
 def img_ui():
+    dummy = Image.new('RGB', (1, 1), 'dimgrey')
+
     with gr.Blocks() as IMG_COMP:
         with gr.Row(elem_id='img_comp_row'):
-            img_A = gr.Image(
+            gr.Image(
+                value=dummy,
                 image_mode='RGB',
                 type='pil',
                 show_download_button=False,
@@ -14,7 +18,8 @@ def img_ui():
                 elem_id='img_comp_A'
             )
 
-            img_B = gr.Image(
+            gr.Image(
+                value=dummy,
                 image_mode='RGB',
                 type='pil',
                 show_download_button=False,
@@ -25,7 +30,7 @@ def img_ui():
             )
 
         with gr.Row(elem_id='img_comp_tools'):
-            inp_A = gr.Image(
+            gr.Image(
                 image_mode='RGB',
                 label='Image A',
                 sources='upload',
@@ -41,7 +46,7 @@ def img_ui():
                 i2i_btn = gr.Button('Load from img2img', elem_id='img_comp_i2i')
                 ex_btn = gr.Button('Load from Extras', elem_id='img_comp_extras')
 
-            inp_B = gr.Image(
+            gr.Image(
                 image_mode='RGB',
                 label='Image B',
                 sources='upload',
@@ -52,15 +57,7 @@ def img_ui():
                 elem_id='img_comp_input_B'
             )
 
-            def load_img(a, b):
-                return [a, b]
-
-            comp_btn.click(
-                load_img,
-                inputs=[inp_A, inp_B],
-                outputs=[img_A, img_B]
-            ).success(None, None, None, _js='() => { load_ImageComparison(); }')
-
+            comp_btn.click(None, None, None, _js='() => { ImgCompLoader.loadImage("upload"); }')
             i2i_btn.click(None, None, None, _js='() => { ImgCompLoader.loadImage("i2i"); }')
             ex_btn.click(None, None, None, _js='() => { ImgCompLoader.loadImage("extras"); }')
 
