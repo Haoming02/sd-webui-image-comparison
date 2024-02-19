@@ -12,6 +12,10 @@
                 source_a = gradioApp().getElementById('img2img_image').querySelector('img');
                 source_b = gradioApp().getElementById('img2img_gallery').querySelector('img');
                 break;
+            case 'inpaint':
+                source_a = gradioApp().getElementById('img2img_inpaint_tab').querySelector('img');
+                source_b = gradioApp().getElementById('img2img_gallery').querySelector('img');
+                break;
             case 'extras':
                 source_a = gradioApp().getElementById('extras_image').querySelector('img');
                 source_b = gradioApp().getElementById('extras_gallery').querySelector('img');
