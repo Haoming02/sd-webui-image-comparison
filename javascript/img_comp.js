@@ -3,12 +3,16 @@
     static IMG_COMP_WIDTH;
     static img_A;
     static img_B;
+    static alpha_slider;
     static bar;
 
     static reset() {
         this.img_B.parentNode.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
         this.img_B.style.left = `${this.IMG_COMP_WIDTH}px`;
+        this.img_B.style.opacity = 1.0;
         this.bar.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
+        this.alpha_slider.querySelector('input').value = 1.0;
+        updateInput(this.alpha_slider.querySelector('input'));
     }
 
     static init() {
@@ -40,6 +44,11 @@
         block_B.style.pointerEvents = 'none';
         block_B.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
         this.img_B.style.left = `${this.IMG_COMP_WIDTH}px`;
+
+        this.alpha_slider = gradioApp().getElementById('img_comp_alpha');
+        this.alpha_slider.addEventListener('mousemove', () => {
+            this.img_B.style.opacity = this.alpha_slider.querySelector('input').value;
+        });
 
         this.bar = row.querySelector('.bar');
 

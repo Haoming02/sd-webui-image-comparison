@@ -50,3 +50,8 @@
     padding: 1em;
     border-radius: 1em;
 }
+
+#img_comp_alpha {
+    width: var(--img-comp-width);
+    left: calc(50% - (var(--img-comp-width) / 2));
+}

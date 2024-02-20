@@ -29,6 +29,8 @@ def img_ui():
                 elem_id='img_comp_B'
             )
 
+        gr.Slider(label="Opacity", minimum=0.0, maximum=1.0, step=0.05, value=1.0, elem_id='img_comp_alpha')
+
         with gr.Row(elem_id='img_comp_tools'):
             gr.Image(
                 image_mode='RGB',
