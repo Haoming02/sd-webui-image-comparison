@@ -1,5 +1,11 @@
 ﻿class ImgCompLoader {
 
+    static swapImage() {
+        let temp = ImageComparator.img_A.src;
+        ImageComparator.img_A.src = ImageComparator.img_B.src;
+        ImageComparator.img_B.src = temp;
+    }
+
     static loadImage(tab) {
         var source_a = null;
         var source_b = null;

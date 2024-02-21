@@ -5,12 +5,44 @@
     static img_B;
     static alpha_slider;
     static bar;
+    static direction_checkbox;
+
+    static isHorizontal() {
+        return this.direction_checkbox.checked;
+    }
 
     static reset() {
-        this.img_B.parentNode.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
-        this.img_B.style.left = `${this.IMG_COMP_WIDTH}px`;
+        if (this.isHorizontal()) {
+            this.img_B.parentNode.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
+            this.img_B.style.left = `${this.IMG_COMP_WIDTH}px`;
+            this.bar.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
+
+            this.img_B.parentNode.style.top = '0px';
+            this.img_B.style.top = '0px';
+            this.bar.style.top = '0px';
+
+            this.bar.style.height = `${this.IMG_COMP_WIDTH}px`;
+            this.bar.style.width = '2px';
+
+            this.img_A.classList.add('hor');
+            this.img_A.classList.remove('ver');
+        } else {
+            this.img_B.parentNode.style.left = `calc(50% - ${this.IMG_COMP_WIDTH / 2}px)`;
+            this.img_B.style.left = '0px';
+            this.bar.style.left = `calc(50% - ${this.IMG_COMP_WIDTH / 2}px)`;
+
+            this.img_B.parentNode.style.top = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
+            this.img_B.style.top = `${this.IMG_COMP_WIDTH}px`;
+            this.bar.style.top = `${this.IMG_COMP_WIDTH}px`;
+
+            this.bar.style.width = `${this.IMG_COMP_WIDTH}px`;
+            this.bar.style.height = '2px';
+
+            this.img_A.classList.remove('hor');
+            this.img_A.classList.add('ver');
+        }
+
         this.img_B.style.opacity = 1.0;
-        this.bar.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
         this.alpha_slider.querySelector('input').value = 1.0;
         updateInput(this.alpha_slider.querySelector('input'));
     }
@@ -50,6 +82,8 @@
             this.img_B.style.opacity = this.alpha_slider.querySelector('input').value;
         });
 
+        this.direction_checkbox = gradioApp().getElementById('img_comp_horizontal').querySelector('input[type=checkbox]');
+
         this.bar = row.querySelector('.bar');
 
         this.bar = document.createElement('div');
@@ -65,18 +99,33 @@
                 const rect = e.target.getBoundingClientRect();
                 var ratio = 0.5;
 
-                if (e.target.id === 'img_comp_row')
-                    ratio = (e.clientX > (rect.left + rect.right) / 2) ? 1.0 : 0.0;
-                else
-                    ratio = ((e.clientX - rect.left) / (rect.right - rect.left));
+                if (this.isHorizontal()) {
+                    if (e.target.id === 'img_comp_row')
+                        ratio = (e.clientX > (rect.left + rect.right) / 2) ? 1.0 : 0.0;
+                    else
+                        ratio = ((e.clientX - rect.left) / (rect.right - rect.left));
 
-                const SLIDE_VALUE = this.IMG_COMP_WIDTH * (1.0 - ratio);
+                    const SLIDE_VALUE = this.IMG_COMP_WIDTH * (1.0 - ratio);
 
-                this.bar.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
-                block_B.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
-                this.img_B.style.left = `calc(${-this.IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                    this.bar.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
+                    block_B.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
+                    this.img_B.style.left = `calc(${-this.IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                } else {
+                    if (e.target.id === 'img_comp_row')
+                        ratio = (e.clientX > (rect.left + rect.right) / 2) ? 1.0 : 0.0;
+                    else
+                        ratio = ((e.clientY - rect.top) / (rect.bottom - rect.top));
+
+                    const SLIDE_VALUE = this.IMG_COMP_WIDTH * (1.0 - ratio);
+
+                    this.bar.style.top = `calc(${this.IMG_COMP_WIDTH}px - ${SLIDE_VALUE}px)`;
+                    block_B.style.top = `calc(${this.IMG_COMP_WIDTH}px - ${SLIDE_VALUE}px)`;
+                    this.img_B.style.top = `calc(${-this.IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                }
             });
         });
+
+        ImageComparator.reset();
     }
 }
 

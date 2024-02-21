@@ -11,8 +11,12 @@
         position: relative;
     }
 
-        #img_comp_row img:hover {
+        #img_comp_row img.hor:hover {
             cursor: ew-resize;
+        }
+
+        #img_comp_row img.ver:hover {
+            cursor: ns-resize;
         }
 
     #img_comp_row .comp-block {
@@ -26,13 +30,11 @@
 
     #img_comp_row .bar {
         display: block;
-        width: 2px;
-        height: var(--img-comp-width);
         position: absolute;
         background-color: white;
-        left: calc(50% + (var(--img-comp-width) / 2) - 4px);
         z-index: 500;
         min-width: 0px;
+        min-height: 0px;
         opacity: 0.9;
         pointer-events: none;
     }
@@ -45,13 +47,12 @@
     margin-bottom: auto;
 }
 
+#img_comp_horizontal {
+    margin: 1em;
+}
+
 #img_comp_tools {
     background-color: var(--panel-background-fill);
     padding: 1em;
     border-radius: 1em;
-}
-
-#img_comp_alpha {
-    width: var(--img-comp-width);
-    left: calc(50% - (var(--img-comp-width) / 2));
 }
