@@ -56,3 +56,13 @@
     padding: 1em;
     border-radius: 1em;
 }
+
+#img_comp_info p {
+    background: var(--panel-background-fill);
+    padding: 1em;
+    border-radius: 1em;
+}
+
+    #img_comp_info p .comp-diff {
+        color: red;
+    }

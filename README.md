@@ -6,15 +6,13 @@ This is an Extension for the [Automatic1111 Webui](https://github.com/AUTOMATIC1
 <i>Draggable Image Slider</i>
 </p>
 
-Wanna check how your `img2img` went? 
-Upload the input and output images manually, 
-or click a button to load the images from **img2img** or **Extras** tab automatically,
-to the new **Comparison** tab to compare the results!
-This even works for cropped images!
+Wanna check how your **img2img** went? 
+Simply upload the input and output images manually, 
+or click a button to load the images from `img2img` / `Extras` tab automatically,
+to compare the results in the brand new **Comparison** tab!
 
-<hr>
-
-<sup> 
-There are probably existing packages for this purpose. 
-But writing one myself is a good practice, and gives a sense of achievement :p 
-</sup>
+Now also comes with an **Infotext** panel to compare the generation parameters.
+*(Only for manually uploaded images)*
+<p align="center">
+<img src="info.jpg"><br>
+</p>
