@@ -11,6 +11,16 @@
         return this.direction_checkbox.checked;
     }
 
+    static switch_to_comparison() {
+        const tabs = gradioApp().querySelector('#tabs').querySelector('.tab-nav').querySelectorAll('button');
+        for (let i = 0; i < tabs.length; i++) {
+            if (tabs[i].textContent.trim() === "Comparison") {
+                tabs[i].click();
+                break;
+            }
+        }
+    }
+
     static reset() {
         if (this.isHorizontal()) {
             this.img_B.parentNode.style.left = `calc(50% + ${this.IMG_COMP_WIDTH / 2}px)`;
@@ -45,6 +55,67 @@
         this.img_B.style.opacity = 1.0;
         this.alpha_slider.querySelector('input').value = 1.0;
         updateInput(this.alpha_slider.querySelector('input'));
+    }
+
+    static addButtons() {
+        // 0: Off ; 1: Text ; 2: Icon
+        const config = gradioApp().getElementById('setting_comp_send_btn').querySelectorAll('label');
+        var option = 0;
+
+        for (let i = 1; i < 3; i++) {
+            if (config[i].classList.contains('selected')) {
+                option = i;
+                break;
+            }
+        }
+
+        if (option === 0)
+            return;
+
+        ['img2img', 'extras'].forEach((mode) => {
+            const row = gradioApp().getElementById(`image_buttons_${mode}`).querySelector('.form');
+            const btn = row.lastElementChild.cloneNode();
+
+            btn.id = `${mode}_send_to_comp`;
+            btn.title = "Send images to comparison tab.";
+            if (option === 1)
+                btn.textContent = "Send to Comparison";
+            else
+                btn.textContent = "🆚";
+
+            if (mode === "extras") {
+                btn.addEventListener('click', () => {
+                    ImgCompLoader.loadImage("extras");
+                    this.switch_to_comparison();
+                });
+            }
+            else {
+                const tabs = gradioApp().getElementById('img2img_settings').querySelector('.tabs').querySelector('.tab-nav');
+
+                btn.addEventListener('click', () => {
+                    [...tabs.querySelectorAll('button')].forEach((tab) => {
+                        if (tab.classList.contains('selected')) {
+                            const t = tab.textContent.trim();
+
+                            if (t === "img2img") {
+                                ImgCompLoader.loadImage("i2i");
+                                this.switch_to_comparison();
+                            }
+                            else if (t === "Inpaint") {
+                                ImgCompLoader.loadImage("inpaint");
+                                this.switch_to_comparison();
+                            }
+                            else {
+                                alert("Only img2img and Inpaint are supported in Comparison!");
+                                return;
+                            }
+                        }
+                    });
+                });
+            }
+
+            row.appendChild(btn);
+        });
     }
 
     static init() {
@@ -126,6 +197,7 @@
         });
 
         ImageComparator.reset();
+        this.addButtons();
     }
 }
 

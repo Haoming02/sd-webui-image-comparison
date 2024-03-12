@@ -1,5 +1,5 @@
 from modules.images import read_info_from_image
-from modules import script_callbacks
+from modules import script_callbacks, shared
 from PIL import Image
 import gradio as gr
 import re
@@ -196,4 +196,10 @@ def img_ui():
 
     return [(IMG_COMP, 'Comparison', 'sd-webui-image-comparison')]
 
+
+def add_ui_settings():
+    shared.opts.add_option("comp_send_btn", shared.OptionInfo("Off", 'Add a "Send to Comparison" button under generation result', gr.Radio, lambda: {"choices": ["Off", "Text", "Icon"]}, section=('ui', "User interface")).needs_reload_ui())
+
+
 script_callbacks.on_ui_tabs(img_ui)
+script_callbacks.on_ui_settings(add_ui_settings)
