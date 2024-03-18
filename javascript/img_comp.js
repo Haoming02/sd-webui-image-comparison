@@ -149,8 +149,10 @@
         this.img_B.style.left = `${this.IMG_COMP_WIDTH}px`;
 
         this.alpha_slider = gradioApp().getElementById('img_comp_alpha');
-        this.alpha_slider.addEventListener('mousemove', () => {
-            this.img_B.style.opacity = this.alpha_slider.querySelector('input').value;
+        ['mousemove', 'touchmove'].forEach((ev) => {
+            this.alpha_slider.addEventListener(ev, () => {
+                this.img_B.style.opacity = this.alpha_slider.querySelector('input').value;
+            });
         });
 
         this.direction_checkbox = gradioApp().getElementById('img_comp_horizontal').querySelector('input[type=checkbox]');
