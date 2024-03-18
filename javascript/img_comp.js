@@ -161,12 +161,16 @@
         this.bar.classList.add('bar');
         row.appendChild(this.bar);
 
-        ['click', 'mousemove'].forEach((ev) => {
+        ['click', 'mousemove', 'touchmove'].forEach((ev) => {
             row.addEventListener(ev, (e) => {
                 e.preventDefault();
-                if (e.buttons != 1)
-                    return;
-
+                if (ev.startsWith('touch')) {
+                    e = e.changedTouches[0];
+                } else {
+                    if (e.buttons != 1) {
+                        return;
+                    }
+                }
                 const rect = e.target.getBoundingClientRect();
                 var ratio = 0.5;
 
