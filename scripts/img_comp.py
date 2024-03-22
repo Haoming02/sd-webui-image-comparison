@@ -198,7 +198,8 @@ def img_ui():
 
 
 def add_ui_settings():
-    shared.opts.add_option("comp_send_btn", shared.OptionInfo("Off", 'Add a "Send to Comparison" button under generation result', gr.Radio, lambda: {"choices": ["Off", "Text", "Icon"]}, section=('ui', "User interface")).needs_reload_ui())
+    shared.opts.add_option("comp_send_btn", shared.OptionInfo("Off", 'Add a "Send to Comparison" button under img2img generation result', gr.Radio, lambda: {"choices": ["Off", "Text", "Icon"]}, section=('ui', "User interface")).needs_reload_ui())
+    shared.opts.add_option("comp_send_btn_t2i", shared.OptionInfo("Off", 'Add a "Send to Comparison" button under txt2img generation result to compare against previous generation', gr.Radio, lambda: {"choices": ["Off", "Text", "Icon"]}, section=('ui', "User interface")).needs_reload_ui())
 
 
 script_callbacks.on_ui_tabs(img_ui)

@@ -6,6 +6,7 @@
     static alpha_slider;
     static bar;
     static direction_checkbox;
+    static cached_image = undefined;
 
     static isHorizontal() {
         return this.direction_checkbox.checked;
@@ -118,6 +119,52 @@
         });
     }
 
+    static addTxt2ImgButton() {
+        // 0: Off ; 1: Text ; 2: Icon
+        const config = gradioApp().getElementById('setting_comp_send_btn_t2i').querySelectorAll('label');
+        var option = 0;
+
+        for (let i = 1; i < 3; i++) {
+            if (config[i].classList.contains('selected')) {
+                option = i;
+                break;
+            }
+        }
+
+        if (option === 0)
+            return;
+
+        const generate = gradioApp().getElementById("txt2img_generate");
+        generate.addEventListener("click", () => {
+            this.cached_image = gradioApp().getElementById('txt2img_gallery').querySelector('img')?.src;
+        });
+
+        const row = gradioApp().getElementById("image_buttons_txt2img").querySelector('.form');
+        const btn = row.lastElementChild.cloneNode();
+
+        btn.id = "txt2img_send_to_comp";
+        btn.title = "Send images to comparison tab.";
+        if (option === 1)
+            btn.textContent = "Send to Comparison";
+        else
+            btn.textContent = "🆚";
+
+        btn.addEventListener('click', () => {
+            if (this.cached_image == null) {
+                alert("No cached result exists!");
+                return;
+            }
+
+            ImageComparator.img_A.src = this.cached_image;
+            ImageComparator.img_B.src = gradioApp().getElementById('txt2img_gallery').querySelector('img').src;
+            ImageComparator.reset();
+
+            this.switch_to_comparison();
+        });
+
+        row.appendChild(btn);
+    }
+
     static init() {
         const block_A = gradioApp().getElementById('img_comp_A');
         this.img_A = block_A.querySelector('img');
@@ -166,13 +213,12 @@
         ['click', 'mousemove', 'touchmove'].forEach((ev) => {
             row.addEventListener(ev, (e) => {
                 e.preventDefault();
-                if (ev.startsWith('touch')) {
+
+                if (ev.startsWith('touch'))
                     e = e.changedTouches[0];
-                } else {
-                    if (e.buttons != 1) {
-                        return;
-                    }
-                }
+                else if (e.buttons != 1)
+                    return;
+
                 const rect = e.target.getBoundingClientRect();
                 var ratio = 0.5;
 
@@ -204,6 +250,7 @@
 
         ImageComparator.reset();
         this.addButtons();
+        this.addTxt2ImgButton();
     }
 }
 
