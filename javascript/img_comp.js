@@ -134,9 +134,12 @@
         if (option === 0)
             return;
 
-        const generate = gradioApp().getElementById("txt2img_generate");
-        generate.addEventListener("click", () => {
-            this.cached_image = gradioApp().getElementById('txt2img_gallery').querySelector('img')?.src;
+        ["txt2img_generate", "txt2img_upscale"].forEach((btn) => {
+            const generate = gradioApp().getElementById(btn);
+            if (generate != null)
+                generate.addEventListener("click", () => {
+                    this.cached_image = gradioApp().getElementById('txt2img_gallery').querySelector('img')?.src;
+                });
         });
 
         const row = gradioApp().getElementById("image_buttons_txt2img").querySelector('.form');
