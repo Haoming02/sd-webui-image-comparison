@@ -154,7 +154,6 @@ def img_ui():
             upload_A = gr.Image(
                 image_mode='RGB',
                 label='Image A',
-                sources='upload',
                 type='pil',
                 show_download_button=False,
                 interactive=True,
@@ -171,7 +170,6 @@ def img_ui():
             upload_B = gr.Image(
                 image_mode='RGB',
                 label='Image B',
-                sources='upload',
                 type='pil',
                 show_download_button=False,
                 interactive=True,
