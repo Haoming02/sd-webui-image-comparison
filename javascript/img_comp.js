@@ -8,6 +8,10 @@
     static direction_checkbox;
     static cached_image = undefined;
 
+    static translateX = 0.0;
+    static translateY = 0.0;
+    static scale = 1.0;
+
     static isHorizontal() {
         return this.direction_checkbox.checked;
     }
@@ -178,6 +182,7 @@
         this.IMG_COMP_WIDTH = parseFloat(getComputedStyle(tab).getPropertyValue('--img-comp-width').split('px')[0]);
 
         const row = gradioApp().getElementById('img_comp_row');
+        row.setAttribute("tabindex", 0);
         row.style.display = 'block';
 
         block_A.insertBefore(this.img_A, block_A.firstChild);
@@ -251,9 +256,55 @@
             });
         });
 
+        row.addEventListener("keydown", (e) => {
+            var flag = false;
+
+            if (e.key == "=" || e.key == "+") {
+                this.scale = Math.min(this.scale + 0.25, 8.0);
+                flag = true;
+            }
+            if (e.key == "-") {
+                this.scale = Math.max(this.scale - 0.25, 0.25)
+                flag = true;
+            }
+            if (e.key == "ArrowUp") {
+                this.translateY += (50 / this.scale);
+                flag = true;
+            }
+            if (e.key == "ArrowDown") {
+                this.translateY -= (50 / this.scale);
+                flag = true;
+            }
+            if (e.key == "ArrowRight") {
+                this.translateX -= (50 / this.scale);
+                flag = true;
+            }
+            if (e.key == "ArrowLeft") {
+                this.translateX += (50 / this.scale);
+                flag = true;
+            }
+            if (e.key == "0") {
+                this.translateX = 0.0;
+                this.translateY = 0.0;
+                this.scale = 1.0;
+                flag = true;
+            }
+
+            if (flag) {
+                e.preventDefault();
+                row.style.transform = `scale(${this.scale}) translate(${this.translateX}px, ${this.translateY}px)`;
+                return false;
+            }
+        });
+
         ImageComparator.reset();
         this.addButtons();
         this.addTxt2ImgButton();
+
+        const container = document.createElement("div");
+        container.id = "img_comp_row_container";
+        row.parentNode.insertBefore(container, row);
+        container.appendChild(row);
     }
 }
 

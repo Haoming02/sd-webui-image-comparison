@@ -3,41 +3,45 @@
     --img-comp-width: 768px;
 }
 
+#img_comp_row:focus {
+    outline: none;
+}
+
 #img_comp_row {
     height: var(--img-comp-width);
 }
 
-    #img_comp_row img {
-        position: relative;
-    }
+#img_comp_row img {
+    position: relative;
+}
 
-        #img_comp_row img.hor:hover {
-            cursor: ew-resize;
-        }
+#img_comp_row img.hor:hover {
+    cursor: ew-resize;
+}
 
-        #img_comp_row img.ver:hover {
-            cursor: ns-resize;
-        }
+#img_comp_row img.ver:hover {
+    cursor: ns-resize;
+}
 
-    #img_comp_row .comp-block {
-        width: var(--img-comp-width);
-        height: var(--img-comp-width);
-        position: absolute;
-        z-index: 100;
-        left: calc(50% - (var(--img-comp-width) / 2));
-        border-radius: 0px;
-    }
+#img_comp_row .comp-block {
+    width: var(--img-comp-width);
+    height: var(--img-comp-width);
+    position: absolute;
+    z-index: 100;
+    left: calc(50% - (var(--img-comp-width) / 2));
+    border-radius: 0px;
+}
 
-    #img_comp_row .bar {
-        display: block;
-        position: absolute;
-        background-color: white;
-        z-index: 500;
-        min-width: 0px;
-        min-height: 0px;
-        opacity: 0.9;
-        pointer-events: none;
-    }
+#img_comp_row .bar {
+    display: block;
+    position: absolute;
+    background-color: white;
+    z-index: 500;
+    min-width: 0px;
+    min-height: 0px;
+    opacity: 0.9;
+    pointer-events: none;
+}
 
 #img_comp_btn {
     margin-top: auto;
@@ -63,6 +67,12 @@
     border-radius: 1em;
 }
 
-    #img_comp_info p .comp-diff {
-        color: red;
-    }
+#img_comp_info p .comp-diff {
+    color: red;
+}
+
+#img_comp_row_container {
+    height: var(--img-comp-width);
+    width: 100%;
+    overflow: hidden;
+}
