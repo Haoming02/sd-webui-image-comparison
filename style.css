@@ -9,10 +9,14 @@
 
 #img_comp_row {
     height: var(--img-comp-width);
+    user-select: none;
 }
 
 #img_comp_row img {
     position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 #img_comp_row img.hor:hover {
@@ -55,10 +59,15 @@
     margin: 1em;
 }
 
+#img_comp_utils {
+    user-select: none;
+}
+
 #img_comp_tools {
     background-color: var(--panel-background-fill);
     padding: 1em;
     border-radius: 1em;
+    user-select: none;
 }
 
 #img_comp_info p {
@@ -75,4 +84,21 @@
     height: var(--img-comp-width);
     width: 100%;
     overflow: hidden;
+}
+
+#icomp_in {
+    cursor: zoom-in;
+}
+
+#icomp_out {
+    cursor: zoom-out;
+}
+
+#tab_sd-webui-image-comparison .img_comp_buttons {
+    min-width: 0px !important;
+    display: block;
+    position: absolute;
+    left: 1em;
+    top: 25%;
+    width: 2.4em;
 }
