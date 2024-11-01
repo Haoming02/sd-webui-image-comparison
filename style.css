@@ -19,6 +19,10 @@
     object-fit: contain;
 }
 
+#img_comp_row img.drag:hover {
+    cursor: move !important;
+}
+
 #img_comp_row img.hor:hover {
     cursor: ew-resize;
 }

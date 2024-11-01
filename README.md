@@ -28,15 +28,21 @@ Wanna check how your **img2img** went? Simply compare the results in the brand n
     - Add new buttons to the `img2img` and `Extras` tabs, that send the input and output images to the `Comparison` tab when clicked
     - Add a new button to the `txt2img` tab, that sends the current result image along with the cached previous result image to the `Comparison` tab when clicked
 
-- <b><ins>Compare Details</ins></b>
-    - Use `left click` to drag the comparison bar
-    - Use the `Horizontal Slider` checkbox to toggle between *side-by-side* and *top-to-bottom* comparisons
-    - Use the `Opacity` slider to alter the transparency of the 2nd image
-    - Click on the `Swap` button to quickly exchange the two images
-    - Press the `+` key or click the `➕` button to zoom in
-    - Press the `-` key or click the `➖` button to zoom out
-    - Press the `backspace` key or click the `🔄` button to reset the scale and position
-    - Use `arrow keys` to pan around
+- <b><ins>Controls</ins></b>
+    - <b>Default</b>
+        - Use `left click` to drag the comparison bar
+        - Press the `backspace` key or click the `🔄` button to reset the scale and position
+        - Press the `+` key or click the `➕` button to zoom in
+        - Press the `-` key or click the `➖` button to zoom out
+        - Use `arrow keys` to pan around
+    - <b>Holding Shift</b>
+        - Use `left click` to pan around
+        - Use `scrollwheel` to zoom in & out
+        - Press the `0` key to reset the scale and position
+    - <b>Buttons</b>
+        - Use the `Horizontal Slider` checkbox to toggle between *side-by-side* and *top-to-bottom* comparisons
+        - Use the `Opacity` slider to alter the transparency of the 2nd image
+        - Click on the `Swap` button to quickly exchange the two images
 
 ### Infotext
 

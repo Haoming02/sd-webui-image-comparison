@@ -218,7 +218,19 @@
         this.#bar.classList.add('bar');
         row.appendChild(this.#bar);
 
-        ['click', 'mousemove', 'touchmove'].forEach((ev) => {
+        var startX, startY;
+        var freezeX, freezeY;
+        row.addEventListener("mousedown", (e) => {
+            if (!e.shiftKey)
+                return;
+
+            startX = e.clientX;
+            startY = e.clientY;
+            freezeX = this.#translateX;
+            freezeY = this.#translateY;
+        });
+
+        ['mousemove', 'touchmove'].forEach((ev) => {
             row.addEventListener(ev, (e) => {
                 e.preventDefault();
 
@@ -227,39 +239,78 @@
                 else if (e.buttons != 1)
                     return;
 
-                const rect = e.target.getBoundingClientRect();
-                const notImage = e.target.tagName !== 'IMG';
-                var ratio = undefined;
+                if (e.shiftKey) {
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
 
-                if (this.#isHorizontal) {
-                    if (notImage)
-                        ratio = (e.clientX > (rect.left + rect.right) / 2) ? 1.0 : 0.0;
-                    else
-                        ratio = ((e.clientX - rect.left) / (rect.right - rect.left));
+                    this.#translateX = freezeX + deltaX / this.#scale;
+                    this.#translateY = freezeY + deltaY / this.#scale;
 
-                    ratio = this.#clamp01(ratio);
-                    const SLIDE_VALUE = this.#IMG_COMP_WIDTH * (1.0 - ratio);
-
-                    this.#bar.style.left = `calc(50% + ${this.#IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
-                    block_B.style.left = `calc(50% + ${this.#IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
-                    this.img_B.style.left = `calc(${-this.#IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                    row.style.transform = `scale(${this.#scale}) translate(${this.#translateX}px, ${this.#translateY}px)`;
                 } else {
-                    if (notImage)
-                        ratio = (e.clientY > (rect.bottom + rect.top) / 2) ? 1.0 : 0.0;
-                    else
-                        ratio = ((e.clientY - rect.top) / (rect.bottom - rect.top));
+                    const rect = e.target.getBoundingClientRect();
+                    const notImage = e.target.tagName !== 'IMG';
+                    var ratio = undefined;
 
-                    ratio = this.#clamp01(ratio);
-                    const SLIDE_VALUE = this.#IMG_COMP_WIDTH * (1.0 - ratio);
+                    if (this.#isHorizontal) {
+                        if (notImage)
+                            ratio = (e.clientX > (rect.left + rect.right) / 2) ? 1.0 : 0.0;
+                        else
+                            ratio = ((e.clientX - rect.left) / (rect.right - rect.left));
 
-                    this.#bar.style.top = `calc(${this.#IMG_COMP_WIDTH}px - ${SLIDE_VALUE}px)`;
-                    block_B.style.top = `calc(${this.#IMG_COMP_WIDTH}px - ${SLIDE_VALUE}px)`;
-                    this.img_B.style.top = `calc(${-this.#IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                        ratio = this.#clamp01(ratio);
+                        const SLIDE_VALUE = this.#IMG_COMP_WIDTH * (1.0 - ratio);
+
+                        this.#bar.style.left = `calc(50% + ${this.#IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
+                        block_B.style.left = `calc(50% + ${this.#IMG_COMP_WIDTH / 2}px - ${SLIDE_VALUE}px)`;
+                        this.img_B.style.left = `calc(${-this.#IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                    } else {
+                        if (notImage)
+                            ratio = (e.clientY > (rect.bottom + rect.top) / 2) ? 1.0 : 0.0;
+                        else
+                            ratio = ((e.clientY - rect.top) / (rect.bottom - rect.top));
+
+                        ratio = this.#clamp01(ratio);
+                        const SLIDE_VALUE = this.#IMG_COMP_WIDTH * (1.0 - ratio);
+
+                        this.#bar.style.top = `calc(${this.#IMG_COMP_WIDTH}px - ${SLIDE_VALUE}px)`;
+                        block_B.style.top = `calc(${this.#IMG_COMP_WIDTH}px - ${SLIDE_VALUE}px)`;
+                        this.img_B.style.top = `calc(${-this.#IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
+                    }
                 }
             });
         });
 
+        row.addEventListener("wheel", (e) => {
+            if (!e.shiftKey)
+                return;
+
+            var flag = false;
+            if (e.deltaY < 0) {
+                this.#scale = Math.min(this.#scale + 0.5, 10.0);
+                flag = true;
+            }
+            if (e.deltaY > 0) {
+                this.#scale = Math.max(this.#scale - 0.5, 0.5)
+                flag = true;
+            }
+
+            if (flag) {
+                e.preventDefault();
+                row.style.transform = `scale(${this.#scale}) translate(${this.#translateX}px, ${this.#translateY}px)`;
+                return false;
+            }
+        });
+
+        row.addEventListener("keyup", (e) => {
+            if (e.key == "Shift")
+                this.img_A.classList.remove('drag');
+        });
+
         row.addEventListener("keydown", (e) => {
+            if (e.key == "Shift")
+                this.img_A.classList.add('drag');
+
             var flag = false;
 
             if (e.key == "=" || e.key == "+") {
@@ -287,7 +338,7 @@
                 flag = true;
             }
 
-            if (e.key == "Backspace") {
+            if (e.key == "Backspace" || e.key == ")" || e.key == "Insert") {
                 this.#translateX = 0.0;
                 this.#translateY = 0.0;
                 this.#scale = 1.0;
