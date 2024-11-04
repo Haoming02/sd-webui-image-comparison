@@ -7,13 +7,10 @@
     }
 
     static loadImage(tab) {
-        var source_a = null;
-        var source_b = null;
+        let source_a = null;
+        let source_b = null;
 
         switch (tab) {
-            default:
-                alert('WTF?');
-                break;
             case 'i2i':
                 source_a = document.getElementById('img2img_image').querySelector('img');
                 source_b = document.getElementById('img2img_gallery').querySelector('img');
@@ -29,6 +26,9 @@
             case 'upload':
                 source_a = document.getElementById('img_comp_input_A').querySelector('img');
                 source_b = document.getElementById('img_comp_input_B').querySelector('img');
+                break;
+            default:
+                alert('Invalid Tab...?');
                 break;
         }
 

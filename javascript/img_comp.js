@@ -63,16 +63,8 @@
 
     static #addButtons() {
         // 0: Off ; 1: Text ; 2: Icon
-        const config = document.getElementById('setting_comp_send_btn').querySelectorAll('label');
-        var option = 0;
-
-        for (let i = 1; i < 3; i++) {
-            if (config[i].classList.contains('selected')) {
-                option = i;
-                break;
-            }
-        }
-
+        const config = Array.from(document.getElementById('setting_comp_send_btn').querySelectorAll('label'));
+        const option = config.findIndex(label => label.classList.contains('selected'));
         if (option === 0)
             return;
 
@@ -82,10 +74,7 @@
 
             btn.id = `${mode}_send_to_comp`;
             btn.title = "Send images to comparison tab.";
-            if (option === 1)
-                btn.textContent = "Send to Comparison";
-            else
-                btn.textContent = "🆚";
+            btn.textContent = (option === 1) ? "Send to Comparison" : "🆚";
 
             if (mode === "extras") {
                 btn.addEventListener('click', () => {
@@ -124,16 +113,8 @@
 
     static #addTxt2ImgButton() {
         // 0: Off ; 1: Text ; 2: Icon
-        const config = document.getElementById('setting_comp_send_btn_t2i').querySelectorAll('label');
-        var option = 0;
-
-        for (let i = 1; i < 3; i++) {
-            if (config[i].classList.contains('selected')) {
-                option = i;
-                break;
-            }
-        }
-
+        const config = Array.from(document.getElementById('setting_comp_send_btn_t2i').querySelectorAll('label'));
+        const option = config.findIndex(label => label.classList.contains('selected'));
         if (option === 0)
             return;
 
@@ -149,10 +130,7 @@
 
         btn.id = "txt2img_send_to_comp";
         btn.title = "Send images to comparison tab.";
-        if (option === 1)
-            btn.textContent = "Send to Comparison";
-        else
-            btn.textContent = "🆚";
+        btn.textContent = (option === 1) ? "Send to Comparison" : "🆚";
 
         btn.addEventListener('click', () => {
             if (this.#cached_image == null) {
@@ -198,8 +176,8 @@
         block_A.classList.add('comp-block');
         block_B.classList.add('comp-block');
 
-        this.img_A.ondragstart = (event) => { event.preventDefault; return false; };
-        this.img_B.ondragstart = (event) => { event.preventDefault; return false; };
+        this.img_A.ondragstart = (e) => { e.preventDefault(); return false; };
+        this.img_B.ondragstart = (e) => { e.preventDefault(); return false; };
 
         block_B.style.pointerEvents = 'none';
         block_B.style.left = `calc(50% + ${this.#IMG_COMP_WIDTH / 2}px)`;
@@ -250,7 +228,7 @@
                 } else {
                     const rect = e.target.getBoundingClientRect();
                     const notImage = e.target.tagName !== 'IMG';
-                    var ratio = undefined;
+                    let ratio = undefined;
 
                     if (this.#isHorizontal) {
                         if (notImage)
