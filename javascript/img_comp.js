@@ -196,8 +196,8 @@
         this.#bar.classList.add('bar');
         row.appendChild(this.#bar);
 
-        var startX, startY;
-        var freezeX, freezeY;
+        let startX, startY;
+        let freezeX, freezeY;
         row.addEventListener("mousedown", (e) => {
             if (!e.shiftKey)
                 return;
@@ -228,7 +228,7 @@
                 } else {
                     const rect = e.target.getBoundingClientRect();
                     const notImage = e.target.tagName !== 'IMG';
-                    let ratio = undefined;
+                    let ratio;
 
                     if (this.#isHorizontal) {
                         if (notImage)
@@ -263,7 +263,7 @@
             if (!e.shiftKey)
                 return;
 
-            var flag = false;
+            let flag = false;
             if (e.deltaY < 0) {
                 this.#scale = Math.min(this.#scale + 0.5, 10.0);
                 flag = true;
@@ -289,8 +289,7 @@
             if (e.key == "Shift")
                 this.img_A.classList.add('drag');
 
-            var flag = false;
-
+            let flag = false;
             if (e.key == "=" || e.key == "+") {
                 this.#scale = Math.min(this.#scale + 0.5, 10.0);
                 flag = true;

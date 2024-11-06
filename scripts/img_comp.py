@@ -3,52 +3,57 @@ from modules.images import read_info_from_image
 from modules.ui_components import ToolButton
 from modules.shared import OptionInfo, opts
 
+from typing import Callable
 from PIL import Image
 import gradio as gr
 import re
 
+COMMA = r'(?!\B"[^"]*),(?![^"]*"\B)'
 
-def parsePrompts(info: str) -> str:
-    positive = negative = ""
+
+def parsePrompts(info: str) -> tuple[list[str], list[str], dict[str, str]]:
+    info = info.replace("<", "&lt;").replace(">", "&gt;")
+
+    positive: list[str] = []
+    negative: list[str] = []
     params: dict[str, str] = {}
 
     if "Negative prompt:" in info:
-        positive, chunk = info.split("Negative prompt:")
-
+        p_chunk, chunk = info.split("Negative prompt:")
         if "Steps" in chunk:
-            negative, args = chunk.split("Steps")
+            n_chunk, args = chunk.split("Steps")
         else:
-            negative = chunk
+            n_chunk = chunk
             args = ""
 
     else:
+        n_chunk = ""
         if "Steps" in info:
-            positive, args = info.split("Steps")
+            p_chunk, args = info.split("Steps")
         else:
-            positive = info
+            p_chunk = info
             args = ""
 
-    comma = ',(?=(?:[^"]*["][^"]*["])*[^"]*$)'
-    chunks = re.split(comma, ("Steps" + args))
+    if p_chunk:
+        positive = [tag.strip() for tag in p_chunk.split(",") if tag.strip()]
 
-    for c in chunks:
-        params[c.split(":", 1)[0].strip()] = c.split(":", 1)[1].strip()
+    if n_chunk:
+        negative = [tag.strip() for tag in n_chunk.split(",") if tag.strip()]
 
-    return (
-        positive.strip().replace("<", "&lt;").replace(">", "&gt;"),
-        negative.strip().replace("<", "&lt;").replace(">", "&gt;"),
-        params,
-    )
+    if args:
+        chunks = re.split(COMMA, (f"Steps{args}"))
+        for c in chunks:
+            k, v = c.split(":", 1)
+            params[k.strip()] = v.strip()
+
+    return positive, negative, params
 
 
 def toDiff(s: str) -> str:
-    if len(s) == 0:
-        return ""
-    else:
-        return f'<span class="comp-diff">{s}</span>'
+    return f'<span class="comp-diff">{s}</span>' if s else ""
 
 
-def img2info(imgA, imgB) -> str:
+def img2info(imgA: Image.Image, imgB: Image.Image) -> list[Callable, Callable]:
     if (imgA is None) or (imgB is None):
         return [gr.update(value=""), gr.update(value="")]
 
@@ -58,49 +63,75 @@ def img2info(imgA, imgB) -> str:
     if (infoA is None) or (infoB is None):
         return [gr.update(value=""), gr.update(value="")]
 
-    infoA = parsePrompts(infoA)
-    infoB = parsePrompts(infoB)
+    contentA: list[str] = []
+    contentB: list[str] = []
 
-    contentA = []
-    contentB = []
+    posA, negA, argsA = parsePrompts(infoA)
+    posB, negB, argsB = parsePrompts(infoB)
 
-    if infoA[0] == infoB[0]:
-        contentA.append(infoA[0])
-        contentB.append(infoB[0])
+    # === Positive Prompt === #
+
+    if posA and posB:
+        common_pos: list[str] = list(set(posA) & set(posB))
+
+        lineA: list[str] = []
+        lineB: list[str] = []
+        for tag in posA:
+            lineA.append(tag if tag in common_pos else toDiff(tag))
+        for tag in posB:
+            lineB.append(tag if tag in common_pos else toDiff(tag))
+
+        contentA.append(", ".join(lineA))
+        contentB.append(", ".join(lineB))
+
     else:
-        contentA.append(toDiff(infoA[0]))
-        contentB.append(toDiff(infoB[0]))
+        contentA.append(toDiff(", ".join(posA)))
+        contentB.append(toDiff(", ".join(posB)))
 
-    if infoA[1] == infoB[1]:
-        contentA.append(infoA[1])
-        contentB.append(infoB[1])
+    contentA[0] = f"<b>Positive:</b> {contentA[0]}"
+    contentB[0] = f"<b>Positive:</b> {contentB[0]}"
+
+    # === Negative Prompt === #
+
+    if negA and negB:
+        common_neg: list[str] = list(set(negA) & set(negB))
+
+        lineA: list[str] = []
+        lineB: list[str] = []
+        for tag in negA:
+            lineA.append(tag if tag in common_neg else toDiff(tag))
+        for tag in negB:
+            lineB.append(tag if tag in common_neg else toDiff(tag))
+
+        contentA.append(", ".join(lineA))
+        contentB.append(", ".join(lineB))
+
     else:
-        contentA.append(toDiff(infoA[1]))
-        contentB.append(toDiff(infoB[1]))
-
-    contentA[0] = f"<b>Positive Prompt:</b> {contentA[0]}"
-    contentB[0] = f"<b>Positive Prompt:</b> {contentB[0]}"
+        contentA.append(toDiff(", ".join(negA)))
+        contentB.append(toDiff(", ".join(negB)))
 
     contentA[1] = f"<b>Negative Prompt:</b> {contentA[1]}"
     contentB[1] = f"<b>Negative Prompt:</b> {contentB[1]}"
 
-    paramsA = []
-    paramsB = []
+    # === Parameters === #
 
-    for K, V in infoA[2].items():
-        if K in infoB[2].keys():
-            if V == infoB[2][K]:
-                paramsA.append(f"{K}: {V}")
-                paramsB.append(f"{K}: {V}")
+    paramsA: list[str] = []
+    paramsB: list[str] = []
+
+    for key, val in argsA.items():
+        if key in argsB:
+            if val == argsB[key]:
+                paramsA.append(f"{key}: {val}")
+                paramsB.append(f"{key}: {val}")
             else:
-                paramsA.append(toDiff(f"{K}: {V}"))
-                paramsB.append(toDiff(f"{K}: {infoB[2][K]}"))
-            del infoB[2][K]
+                paramsA.append(toDiff(f"{key}: {val}"))
+                paramsB.append(toDiff(f"{key}: {argsB[key]}"))
+            del argsB[key]
         else:
-            paramsA.append(toDiff(f"{K}: {V}"))
+            paramsA.append(toDiff(f"{key}: {val}"))
 
-    for K, V in infoB[2].items():
-        paramsB.append(toDiff(f"{K}: {V}"))
+    for key, val in argsB.items():
+        paramsB.append(toDiff(f"{key}: {val}"))
 
     contentA.append(f'<b>Params:</b> {", ".join(paramsA)}')
     contentB.append(f'<b>Params:</b> {", ".join(paramsB)}')
@@ -169,22 +200,24 @@ def img_ui():
             swap_btn = gr.Button("Swap", elem_id="img_comp_swap", scale=1)
             gr.Slider(
                 label="Opacity",
+                elem_id="img_comp_alpha",
                 minimum=0.0,
                 maximum=1.0,
-                step=0.05,
+                step=0.1,
                 value=1.0,
-                elem_id="img_comp_alpha",
+                interactive=True,
                 scale=3,
             )
             dir_cb = gr.Checkbox(
                 label="Horizontal Slider",
-                value=True,
                 elem_id="img_comp_horizontal",
+                interactive=True,
+                value=True,
                 scale=1,
             )
 
         with gr.Row(elem_id="img_comp_tools"):
-            upload_A = gr.Image(
+            upload_a = gr.Image(
                 image_mode="RGB",
                 label="Image A",
                 type="pil",
@@ -201,7 +234,7 @@ def img_ui():
                 inp_btn = gr.Button("Compare Inpaint", elem_id="img_comp_inpaint")
                 ex_btn = gr.Button("Compare Extras", elem_id="img_comp_extras")
 
-            upload_B = gr.Image(
+            upload_b = gr.Image(
                 image_mode="RGB",
                 label="Image B",
                 type="pil",
@@ -224,8 +257,8 @@ def img_ui():
             infotextA = gr.HTML()
             infotextB = gr.HTML()
 
-        upload_A.change(img2info, [upload_A, upload_B], [infotextA, infotextB])
-        upload_B.change(img2info, [upload_A, upload_B], [infotextA, infotextB])
+        upload_a.change(img2info, [upload_a, upload_b], [infotextA, infotextB])
+        upload_b.change(img2info, [upload_a, upload_b], [infotextA, infotextB])
 
         swap_btn.click(fn=None, _js="() => { ImgCompLoader.swapImage(); }")
         dir_cb.change(fn=None, _js="() => { ImageComparator.reset(); }")
