@@ -3,12 +3,16 @@ from modules.images import read_info_from_image
 from modules.ui_components import ToolButton
 from modules.shared import OptionInfo, opts
 
-from typing import Callable
 from PIL import Image
 import gradio as gr
 import re
 
-COMMA = r'(?!\B"[^"]*),(?![^"]*"\B)'
+COMMA = re.compile(',(?=(?:[^"]*["][^"]*["])*[^"]*$)')
+is_gradio_4: bool = str(gr.__version__).startswith("4")
+
+
+def _gjs(func: str) -> dict:
+    return {("js" if is_gradio_4 else "_js"): func}
 
 
 def parsePrompts(info: str) -> tuple[list[str], list[str], dict[str, str]]:
@@ -49,11 +53,11 @@ def parsePrompts(info: str) -> tuple[list[str], list[str], dict[str, str]]:
     return positive, negative, params
 
 
-def toDiff(s: str) -> str:
+def _to_diff(s: str) -> str:
     return f'<span class="comp-diff">{s}</span>' if s else ""
 
 
-def img2info(imgA: Image.Image, imgB: Image.Image) -> list[Callable, Callable]:
+def img2info(imgA: Image.Image, imgB: Image.Image) -> list[str, str]:
     if (imgA is None) or (imgB is None):
         return [gr.update(value=""), gr.update(value="")]
 
@@ -77,16 +81,16 @@ def img2info(imgA: Image.Image, imgB: Image.Image) -> list[Callable, Callable]:
         lineA: list[str] = []
         lineB: list[str] = []
         for tag in posA:
-            lineA.append(tag if tag in common_pos else toDiff(tag))
+            lineA.append(tag if tag in common_pos else _to_diff(tag))
         for tag in posB:
-            lineB.append(tag if tag in common_pos else toDiff(tag))
+            lineB.append(tag if tag in common_pos else _to_diff(tag))
 
         contentA.append(", ".join(lineA))
         contentB.append(", ".join(lineB))
 
     else:
-        contentA.append(toDiff(", ".join(posA)))
-        contentB.append(toDiff(", ".join(posB)))
+        contentA.append(_to_diff(", ".join(posA)))
+        contentB.append(_to_diff(", ".join(posB)))
 
     contentA[0] = f"<b>Positive:</b> {contentA[0]}"
     contentB[0] = f"<b>Positive:</b> {contentB[0]}"
@@ -99,16 +103,16 @@ def img2info(imgA: Image.Image, imgB: Image.Image) -> list[Callable, Callable]:
         lineA: list[str] = []
         lineB: list[str] = []
         for tag in negA:
-            lineA.append(tag if tag in common_neg else toDiff(tag))
+            lineA.append(tag if tag in common_neg else _to_diff(tag))
         for tag in negB:
-            lineB.append(tag if tag in common_neg else toDiff(tag))
+            lineB.append(tag if tag in common_neg else _to_diff(tag))
 
         contentA.append(", ".join(lineA))
         contentB.append(", ".join(lineB))
 
     else:
-        contentA.append(toDiff(", ".join(negA)))
-        contentB.append(toDiff(", ".join(negB)))
+        contentA.append(_to_diff(", ".join(negA)))
+        contentB.append(_to_diff(", ".join(negB)))
 
     contentA[1] = f"<b>Negative Prompt:</b> {contentA[1]}"
     contentB[1] = f"<b>Negative Prompt:</b> {contentB[1]}"
@@ -124,14 +128,14 @@ def img2info(imgA: Image.Image, imgB: Image.Image) -> list[Callable, Callable]:
                 paramsA.append(f"{key}: {val}")
                 paramsB.append(f"{key}: {val}")
             else:
-                paramsA.append(toDiff(f"{key}: {val}"))
-                paramsB.append(toDiff(f"{key}: {argsB[key]}"))
+                paramsA.append(_to_diff(f"{key}: {val}"))
+                paramsB.append(_to_diff(f"{key}: {argsB[key]}"))
             del argsB[key]
         else:
-            paramsA.append(toDiff(f"{key}: {val}"))
+            paramsA.append(_to_diff(f"{key}: {val}"))
 
     for key, val in argsB.items():
-        paramsB.append(toDiff(f"{key}: {val}"))
+        paramsB.append(_to_diff(f"{key}: {val}"))
 
     contentA.append(f'<b>Params:</b> {", ".join(paramsA)}')
     contentB.append(f'<b>Params:</b> {", ".join(paramsB)}')
@@ -186,7 +190,7 @@ def img_ui():
                 tooltip="Zoom In",
             )
             ToolButton(
-                value="\U0001F504",
+                value="\U0001f504",
                 elem_id="icomp_reset",
                 tooltip="Reset to Default Scale",
             )
@@ -248,10 +252,10 @@ def img_ui():
             def js(mode: str) -> str:
                 return f'() => {{ ImgCompLoader.loadImage("{mode}"); }}'
 
-            comp_btn.click(fn=None, _js=js("upload"))
-            i2i_btn.click(fn=None, _js=js("i2i"))
-            inp_btn.click(fn=None, _js=js("inpaint"))
-            ex_btn.click(fn=None, _js=js("extras"))
+            comp_btn.click(fn=None, **_gjs(js("upload")))
+            i2i_btn.click(fn=None, **_gjs(js("i2i")))
+            inp_btn.click(fn=None, **_gjs(js("inpaint")))
+            ex_btn.click(fn=None, **_gjs(js("extras")))
 
         with gr.Row(elem_id="img_comp_info"):
             infotextA = gr.HTML()
@@ -260,14 +264,14 @@ def img_ui():
         upload_a.change(img2info, [upload_a, upload_b], [infotextA, infotextB])
         upload_b.change(img2info, [upload_a, upload_b], [infotextA, infotextB])
 
-        swap_btn.click(fn=None, _js="() => { ImgCompLoader.swapImage(); }")
-        dir_cb.change(fn=None, _js="() => { ImageComparator.reset(); }")
+        swap_btn.click(fn=None, **_gjs("() => { ImgCompLoader.swapImage(); }"))
+        dir_cb.change(fn=None, **_gjs("() => { ImageComparator.reset(); }"))
 
     return [(IMG_COMP, "Comparison", "sd-webui-image-comparison")]
 
 
 def on_settings():
-    section = ("icomp", "Image Comparison")
+    args = {"section": ("icomp", "Image Comparison"), "category_id": "ui"}
     btn = ("Off", "Text", "Icon")
 
     opts.add_option(
@@ -277,8 +281,7 @@ def on_settings():
             'Add a "Send to Comparison" button under img2img and Extras generation result',
             gr.Radio,
             lambda: {"choices": btn},
-            section=section,
-            category_id="ui",
+            **args,
         ).needs_reload_ui(),
     )
 
@@ -289,9 +292,28 @@ def on_settings():
             'Add a "Send to Comparison" button under txt2img generation result to compare against previous generation',
             gr.Radio,
             lambda: {"choices": btn},
-            section=section,
-            category_id="ui",
+            **args,
         ).needs_reload_ui(),
+    )
+
+    opts.add_option(
+        "comp_send_mouse_click",
+        OptionInfo(
+            False,
+            'Use "Ctrl" + "Alt" + "Left Click" / "Right Click" to quickly send any image to comparison',
+            **args,
+        ).needs_reload_ui(),
+    )
+
+    opts.add_option(
+        "comp_send_mouse_auto",
+        OptionInfo(
+            False,
+            "Switch to the Comparison tab afterwards",
+            **args,
+        )
+        .info("for the above option")
+        .needs_reload_ui(),
     )
 
 

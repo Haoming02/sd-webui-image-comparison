@@ -1,7 +1,7 @@
 ﻿# SD Webui Image Comparison
 This is an Extension for the [Automatic1111 Webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui), which adds a new tab for image comparison.
 
-> Also supports both old & new [Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
+> Compatible with [Forge](https://github.com/lllyasviel/stable-diffusion-webui-forge)
 
 <p align="center">
 <img src="./tab.gif"><br>
@@ -27,6 +27,8 @@ Wanna check how your **img2img** went? Simply compare the results in the brand n
 
     - Add new buttons to the `img2img` and `Extras` tabs, that send the input and output images to the `Comparison` tab when clicked
     - Add a new button to the `txt2img` tab, that sends the current result image along with the cached previous result image to the `Comparison` tab when clicked
+    - Allow you to `Ctrl` + `Alt` + `Left Click` / `Right Click` on any element, to send its image to either side of the `Comparison` tab
+        - Doesn't seem to work on images within the result Gallery, so it's mainly for images from other Extensions / Tabs
 
 - <b><ins>Controls</ins></b>
     - <b>Default</b>
