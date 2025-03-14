@@ -68,7 +68,7 @@
         if (option === 0)
             return;
 
-        ['img2img', 'extras'].forEach((mode) => {
+        for (const mode of ['img2img', 'extras']) {
             const buttons = document.getElementById(`image_buttons_${mode}`).querySelectorAll("button");
             const btn = buttons[buttons.length - 1].cloneNode();
 
@@ -86,7 +86,7 @@
                 const tabs = document.getElementById('img2img_settings').querySelector('.tabs').querySelector('.tab-nav');
 
                 btn.addEventListener('click', () => {
-                    [...tabs.querySelectorAll('button')].forEach((tab) => {
+                    for (const tab of tabs.querySelectorAll('button')) {
                         if (tab.classList.contains('selected')) {
                             const t = tab.textContent.trim();
 
@@ -103,12 +103,12 @@
                                 return;
                             }
                         }
-                    });
+                    }
                 });
             }
 
             buttons[0].parentElement.appendChild(btn);
-        });
+        }
     }
 
     static #addTxt2ImgButton() {
@@ -118,12 +118,12 @@
         if (option === 0)
             return;
 
-        ["txt2img_generate", "txt2img_upscale"].forEach((btn) => {
+        for (const btn of ["txt2img_generate", "txt2img_upscale"]) {
             const generate = document.getElementById(btn);
             generate?.addEventListener("click", () => {
                 this.#cached_image = document.getElementById('txt2img_gallery').querySelector('img')?.src;
             });
-        });
+        }
 
         const buttons = document.getElementById("image_buttons_txt2img").querySelectorAll("button");
         const btn = buttons[buttons.length - 1].cloneNode();
@@ -184,11 +184,11 @@
         this.img_B.style.left = `${this.#IMG_COMP_WIDTH}px`;
 
         this.#alpha_slider = document.getElementById('img_comp_alpha');
-        ['mousemove', 'touchmove'].forEach((ev) => {
+        for (const ev of ['mousemove', 'touchmove']) {
             this.#alpha_slider.addEventListener(ev, () => {
                 this.img_B.style.opacity = this.#alpha_slider.querySelector('input').value;
-            });
-        });
+            }, { passive: true });
+        };
 
         this.#direction_checkbox = document.getElementById('img_comp_horizontal').querySelector('input[type=checkbox]');
 
@@ -208,7 +208,7 @@
             freezeY = this.#translateY;
         });
 
-        ['mousemove', 'touchmove'].forEach((ev) => {
+        for (const ev of ['mousemove', 'touchmove']) {
             row.addEventListener(ev, (e) => {
                 e.preventDefault();
 
@@ -256,8 +256,8 @@
                         this.img_B.style.top = `calc(${-this.#IMG_COMP_WIDTH}px + ${SLIDE_VALUE}px)`;
                     }
                 }
-            });
-        });
+            }, { passive: false });
+        }
 
         row.addEventListener("wheel", (e) => {
             if (!e.shiftKey)
@@ -278,7 +278,7 @@
                 row.style.transform = `scale(${this.#scale}) translate(${this.#translateX}px, ${this.#translateY}px)`;
                 return false;
             }
-        });
+        }, { passive: false });
 
         row.addEventListener("keyup", (e) => {
             if (e.key == "Shift")
